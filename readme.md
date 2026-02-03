@@ -10,8 +10,8 @@ set TEXT_HOOK_PROJECT_PATH=C:\path\to\text_hook
 $env:TEXT_HOOK_PROJECT_PATH = "C:\path\to\text_hook"
 ```
 
-
 使用 `python start.py e` 提取原文到 `raw.json`
+
 使用 `python start.py r` 根据译文 `translated.json` 生成翻译补丁文件
 
 生成的翻译补丁文件在`generated/dist`，一般可直接复制到游戏目录
