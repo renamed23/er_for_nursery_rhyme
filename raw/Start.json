@@ -1,0 +1,27 @@
+{
+  "opcodes": [
+    {
+      "op": "C1 00",
+      "offset": 0,
+      "index": 0,
+      "value": [
+        "font"
+      ]
+    },
+    {
+      "op": "C0 00",
+      "offset": 7,
+      "index": 1,
+      "value": [
+        "00_001_0"
+      ]
+    },
+    {
+      "op": "C2 00",
+      "offset": 18,
+      "index": 2,
+      "value": []
+    }
+  ],
+  "text": []
+}
