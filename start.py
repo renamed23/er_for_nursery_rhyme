@@ -90,7 +90,7 @@ def replace():
     # x64dbg_1337_patch,apply_1337_patch_on_attach,create_file_redirect
     # text_out_arg_c_is_bytes
     translate_lib.TextHookBuilder(
-        os.environ["TEXT_HOOK_PROJECT_PATH"]).build("default_impl,text_hook,create_file_redirect", panic="immediate-abort")
+        os.environ["TEXT_HOOK_PROJECT_PATH"]).build("default_impl,text_hook,create_file_redirect,iat_hook", panic="immediate-abort")
 
 
 def main():
