@@ -23,7 +23,7 @@ config = {
     # },
     # "HIJACKED_DLL_PATH": "some_path/your_dll.dll",
     "REDIRECTION_SRC_PATH": "nrarc02.arc",
-    "REDIRECTION_TARGET_PATH": "NurseryRhyme_chs.arc",
+    "REDIRECTION_TARGET_PATH": "NurseryRhyme_chs.pak",
 }
 
 hook_lists = {
@@ -32,6 +32,21 @@ hook_lists = {
         # "PropertySheetA"
     ],
 }
+
+
+# patch,custom_font,debug_output,debug_text_mapping
+# default_impl,enum_font_families
+# export_default_dll_main,read_file_patch_impl
+# debug_file_impl,emulate_locale,override_window_title
+# dll_hijacking,export_patch_process_fn,text_patch,text_extracting
+# x64dbg_1337_patch,apply_1337_patch_on_attach,create_file_redirect
+# text_out_arg_c_is_bytes,iat_hook,resource_pack,resource_pack_embedding
+features = [
+    "default_impl",
+    "text_hook",
+    "create_file_redirect",
+    "iat_hook",
+]
 
 PACKER = "python packer.py"
 ASMER = "python ops.py"
@@ -77,20 +92,13 @@ def replace():
         f"{ASMER} asm generated/translated generated/asmed")
 
     translate_lib.system(
-        f"{PACKER} pack -i generated/asmed -o generated/dist/NurseryRhyme_chs.arc")
+        f"{PACKER} pack -i generated/asmed -o generated/dist/NurseryRhyme_chs.pak")
 
     translate_lib.merge_directories(
         "assets/dist_pass", "generated/dist", overwrite=True)
 
-    # patch,custom_font,debug_output,debug_text_mapping
-    # default_impl,enum_font_families
-    # export_default_dll_main,read_file_patch_impl
-    # debug_file_impl,emulate_locale,override_window_title
-    # dll_hijacking,export_patch_process_fn,text_patch,text_extracting
-    # x64dbg_1337_patch,apply_1337_patch_on_attach,create_file_redirect
-    # text_out_arg_c_is_bytes
     translate_lib.TextHookBuilder(
-        os.environ["TEXT_HOOK_PROJECT_PATH"]).build("default_impl,text_hook,create_file_redirect,iat_hook", panic="immediate-abort")
+        os.environ["TEXT_HOOK_PROJECT_PATH"]).build(features, panic="immediate-abort")
 
 
 def main():
