@@ -22,8 +22,6 @@ config = {
     #     "type": "&str",
     # },
     # "HIJACKED_DLL_PATH": "some_path/your_dll.dll",
-    "REDIRECTION_SRC_PATH": "nrarc02.arc",
-    "REDIRECTION_TARGET_PATH": "NurseryRhyme_chs.pak",
 }
 
 hook_lists = {
@@ -52,26 +50,34 @@ features = [
     "bind_text_mapping",
     "bind_font_manager",
     "enable_iat_hook",
-    "bind_path_redirector",
+    "bind_vfs",
+]
+
+vfs_rules = [
+    {
+        "source": "{exe_dir}/nrarc02.arc",
+        "target": "{exe_dir}/NurseryRhyme_chs.pak",
+        "mode": "fallback",  # force, fallback
+    }
 ]
 
 PACKER = "python packer.py"
 ASMER = "python ops.py"
 
 ER = [
-    ("python er.py extract --path raw --output raw.json",
-     "python er.py replace --path raw --text generated/translated.json")
+    (
+        "python er.py extract --path raw --output raw.json",
+        "python er.py replace --path raw --text generated/translated.json",
+    )
 ]
 
 
 def extract():
     print("执行提取...")
-    translate_lib.system(
-        f"{PACKER} unpack -i nrarc02.arc -o asmed")
-    translate_lib.system(
-        f"{ASMER} disasm asmed raw")
+    translate_lib.system(f"{PACKER} unpack -i nrarc02.arc -o asmed")
+    translate_lib.system(f"{ASMER} disasm asmed raw")
     translate_lib.extract_and_concat(ER)
-    translate_lib.json_process('e', 'raw.json')
+    translate_lib.json_process("e", "raw.json")
 
 
 def replace():
@@ -81,31 +87,33 @@ def replace():
     # 你的 replace 逻辑
     translate_lib.generate_json(config, "config.json")
     translate_lib.generate_json(hook_lists, "hook_lists.json")
+    translate_lib.generate_json(vfs_rules, "vfs_rules.json")
     translate_lib.copy_path(
-        "translated.json", "generated/translated.json", overwrite=True)
-    translate_lib.copy_path(
-        "raw.json", "generated/raw.json", overwrite=True)
+        "translated.json", "generated/translated.json", overwrite=True
+    )
+    translate_lib.copy_path("raw.json", "generated/raw.json", overwrite=True)
     translate_lib.json_check()
-    translate_lib.json_process('r', 'generated/translated.json')
+    translate_lib.json_process("r", "generated/translated.json")
     # translate_lib.ascii_to_fullwidth()
     translate_lib.replace("cp932", False)  # cp932,shift_jis,gbk
 
     translate_lib.split_and_replace(ER)
 
-    translate_lib.copy_path(
-        "translated", "generated/translated", overwrite=True)
+    translate_lib.copy_path("translated", "generated/translated", overwrite=True)
+
+    translate_lib.system(f"{ASMER} asm generated/translated generated/asmed")
 
     translate_lib.system(
-        f"{ASMER} asm generated/translated generated/asmed")
-
-    translate_lib.system(
-        f"{PACKER} pack -i generated/asmed -o generated/dist/NurseryRhyme_chs.pak")
+        f"{PACKER} pack -i generated/asmed -o generated/dist/NurseryRhyme_chs.pak"
+    )
 
     translate_lib.merge_directories(
-        "assets/dist_pass", "generated/dist", overwrite=True)
+        "assets/dist_pass", "generated/dist", overwrite=True
+    )
 
-    translate_lib.TextHookBuilder(
-        os.environ["TEXT_HOOK_PROJECT_PATH"]).build(features, panic="immediate-abort")
+    translate_lib.TextHookBuilder(os.environ["TEXT_HOOK_PROJECT_PATH"]).build(
+        features, panic="immediate-abort"
+    )
 
 
 def main():
